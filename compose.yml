@@ -1,0 +1,41 @@
+services:
+  caddy:
+    image: caddy:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    configs:
+      - source: Caddyfile
+        target: /etc/caddy/Caddyfile
+
+  minio:
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  example:
+    image: example:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m example runserver 0.0.0.0:8000
+
+configs:
+  Caddyfile:
+    content: |
+      example.localhost {
+        reverse_proxy example:8000
+      }
+      storage.example.localhost {
+        reverse_proxy minio:9000
+      }
+      console.example.localhost {
+        reverse_proxy minio:9001
+      }
