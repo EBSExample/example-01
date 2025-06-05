@@ -74,3 +74,18 @@ To start the project in Docker:
 ```bash
 example runserver 0.0.0.0:8000
 ```
+
+## Docker Compose Configuration
+
+The project requires `minio` as a storage for `static` and `media` files. Compose is running three services: our package as container, `minio` and `caddy`.
+Caddy is a reverse proxy that routes extenal requests with domain `https://storage.example.localhost` to `minio` api port, and requests with `https://console.example.localhost` to `minio`'s console port. 
+
+For our `django` container we added:
+
+```yaml
+    extra_hosts:
+        - "storage.example.localhost=host-gateway"
+        - "console.example.localhost=host-gateway"
+```
+
+This will allow us to access `minio`'s console and api using same domains from external and internal networks.
