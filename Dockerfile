@@ -10,7 +10,7 @@ COPY ./pyproject.toml ./uv.lock ./.python-version ./README.md ./
 
 RUN uv sync --locked --no-editable
 
-FROM python:3.13-alpine
+FROM python:3.13-slim
 
 WORKDIR /app
 

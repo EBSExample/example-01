@@ -26,6 +26,9 @@ services:
       context: .
       dockerfile: Dockerfile
     command: python -m example runserver 0.0.0.0:8000
+    extra_hosts:
+      - "storage.example.localhost=host-gateway"
+      - "console.example.localhost=host-gateway"
 
 configs:
   Caddyfile:
